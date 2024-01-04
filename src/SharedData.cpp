@@ -46,11 +46,11 @@ int SharedData::getOffset() {
 }
 
 long SharedData::getLastDistance() {
-    return backingData.lastDistance;
+    return lastDistance;
 }
 
 void SharedData::setLastDistance(long lastDistance) {
-    backingData.lastDistance = lastDistance;
+    this->lastDistance = lastDistance;
 }
 
 void SharedData::setMenuEntries(char* upper, char* mid, char* low) {
@@ -64,11 +64,11 @@ char** SharedData::getMenuEntries() {
 }
 
 void SharedData::setLastRotation(int lastRotation) {
-    backingData.lastRotation = lastRotation;
+    this->lastRotation = lastRotation;
 }
 
 int SharedData::getLastRotation() {
-    return backingData.lastRotation;
+    return lastRotation;
 }
 
 bool SharedData::isLocked() {
@@ -87,14 +87,14 @@ void SharedData::markCalibrationDone() {
 }
 
 void SharedData::scheduleDisplayUpdate() {
-    if(backingData.nextDisplayUpdate == -1) {
-        backingData.nextDisplayUpdate = millis() + DISPLAY_UPDATE_DELAY;
+    if(this->nextDisplayUpdate == -1) {
+        this->nextDisplayUpdate = millis() + DISPLAY_UPDATE_DELAY;
     }
 }
 
 bool SharedData::shouldUpdateDisplay() {
-    if (backingData.nextDisplayUpdate != -1 && millis() > backingData.nextDisplayUpdate) {
-        backingData.nextDisplayUpdate = -1;
+    if (this->nextDisplayUpdate != -1 && millis() > this->nextDisplayUpdate) {
+        this->nextDisplayUpdate = -1;
         return true;
     }
     return false;
@@ -125,4 +125,12 @@ bool SharedData::evaluateFastmodeEnablement(long msSinceLast) {
         rapidInputReceived = 0;
     }
     return rapidInputReceived > 2;
+}
+
+BackingData SharedData::getBackingData() {
+    return backingData;
+}
+
+void SharedData::setBackingData(BackingData newBackingData) {
+    memcpy(&backingData, &newBackingData, sizeof(BackingData));
 }

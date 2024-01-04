@@ -9,11 +9,9 @@ struct BackingData
     long targetPosition;
     long currentPosition;
     int offset;
-    long nextDisplayUpdate = -1;
-    long lastDistance = 0;
-    int lastRotation = 0;
     bool locked = false;
-    bool calibrationDone = false;
+    //bool calibrationDone = false;
+    bool calibrationDone = true;
     MachineState state;
 };
 
@@ -23,6 +21,9 @@ class SharedData {
         BackingData backingData;
         char* menuEntries[3];
         int rapidInputReceived = 0;
+        long nextDisplayUpdate = -1;
+        int lastRotation = 0;
+        long lastDistance = 0;
     public:
         SharedData();
         ~SharedData();
@@ -51,6 +52,8 @@ class SharedData {
         void switchState(MachineState state);
         bool evaluateFastmodeEnablement(long msSinceLast);
         MachineState getState();
+        BackingData getBackingData();
+        void setBackingData(BackingData backingData);
 };
 
 #endif

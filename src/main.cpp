@@ -13,6 +13,7 @@
 #include <MenuHandler.h>
 #include <ArduinoNvs.h>
 #include <FastAccelStepper.h>
+#include <Communicator.h>
 
 #define DEBUG ""
 
@@ -39,6 +40,7 @@ LockController* lockController;
 CalibrationOffsetHandler* calibrationOffsetHandler;
 MenuHandler* menuHandler;
 FastAccelStepperEngine* engine;
+Communicator* communicator;
 
 void setup() {
 	Serial.begin(115200);
@@ -59,9 +61,12 @@ void setup() {
 	calibrator = new Calibrator(sharedData, lockController);
 	calibrationOffsetHandler = new CalibrationOffsetHandler(sharedData);
 	menuHandler = new MenuHandler(sharedData, lockController);
+	communicator = new Communicator(sharedData);
 	sharedData->scheduleDisplayUpdate();
-	sharedData->switchState(MachineState::CALIBRATION_NEEDED);
+//	sharedData->switchState(MachineState::CALIBRATION_NEEDED);
+	sharedData->switchState(MachineState::IDLE);
 }
+
 
 void loop() {
 	buttonManager->tick();
@@ -74,4 +79,5 @@ void loop() {
 	lockController->tick();
 	calibrationOffsetHandler->tick();
 	menuHandler->tick();
+	communicator->tick();
 }
