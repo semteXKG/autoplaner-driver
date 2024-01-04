@@ -7,8 +7,9 @@ Communicator *globalCommunicator;
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
-  Serial.print("Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  if(status != ESP_NOW_SEND_SUCCESS) {
+    Serial.println("Packet Send Status:\tDelivery Fail");
+  }
 }
 
 // Callback when data is received
@@ -16,8 +17,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
   BackingData receivedReading;
   memcpy(&receivedReading, incomingData, sizeof(receivedReading));
-  Serial.print("Bytes received: ");
-  Serial.println(len);
   globalCommunicator->updateBackingData(receivedReading);
 }
 
@@ -59,23 +58,38 @@ Communicator::~Communicator()
 }
 
 void Communicator::updateBackingData(BackingData newBackingData) {
+  std::lock_guard<std::mutex> lck(lockMutex);
   memcpy(&previousBackingData, &newBackingData, sizeof(BackingData));
   sharedData->setBackingData(newBackingData);
+  Serial.print("new TargetPosition: ");
+  Serial.print(sharedData->getTargetPosition());
+  Serial.print("[");
+  Serial.print(previousBackingData.targetPosition);
+  Serial.println("]");
 }
 
 void Communicator::tick()
 {
   BackingData currentBackingData = sharedData->getBackingData();
-  if (isChanged(currentBackingData, previousBackingData))
+  if (isFreshlyStarted() || isChanged(currentBackingData, previousBackingData))
   {
-    Serial.println("changed");
     esp_now_send(broadcastAddress, (uint8_t *)&currentBackingData, sizeof(currentBackingData));
     memcpy(&previousBackingData, &currentBackingData, sizeof(BackingData));
+    lastSent = millis();
   }
 }
 
+boolean Communicator::isFreshlyStarted() 
+{
+  long currentTimestamp = millis();
+  return (currentTimestamp < 120000 && currentTimestamp - lastSent > 10000);
+}
+
+
 boolean Communicator::isChanged(BackingData currentData, BackingData previousData)
 {
+  std::lock_guard<std::mutex> lck(lockMutex);
+
   if (currentData.calibrationDone != previousData.calibrationDone)
   {
     Serial.println("calibrationDone");
@@ -105,7 +119,10 @@ boolean Communicator::isChanged(BackingData currentData, BackingData previousDat
   }
   if (currentData.targetPosition != previousData.targetPosition)
   {
-    Serial.println("targetPosition");
+    Serial.print("targetPosition: ");
+    Serial.print(previousData.targetPosition);
+    Serial.print("->");
+    Serial.println(currentData.targetPosition);
     return true;
   }
   return false;

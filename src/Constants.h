@@ -57,7 +57,8 @@ static unsigned char unlocked_bits[] = {
 
 
  static const char *machineStateDesc[] =
-{ "CALIBRATION_NEEDED", 
+{ "CONFIG_NEEDED", 
+"CALIBRATION_NEEDED", 
 "PREP CALIBRATION",
 "CALIBRATING", 
 "IDLE", 
@@ -77,6 +78,7 @@ static unsigned char unlocked_bits[] = {
 
 
 enum MachineState {
+    CONFIG_NEEDED,
     CALIBRATION_NEEDED,
     PREP_CALIBRATION, 
     CALIBRATING,

@@ -7,9 +7,9 @@ LockController::LockController(SharedData* sharedData, FastAccelStepperEngine* e
     stepper = engine->stepperConnectToPin(pulsePin);
     this->sharedData = sharedData;
 
-    Serial.print("Recovered LockState: ");
-    Serial.println(NVS.getInt(KEY_LOCKSTATE));
-    sharedData->setLocked(NVS.getInt(KEY_LOCKSTATE));
+    //Serial.print("Recovered LockState: ");
+    //Serial.println(NVS.getInt(KEY_LOCKSTATE));
+    //sharedData->setLocked(NVS.getInt(KEY_LOCKSTATE));
 
     stepper->setSpeedInHz(LOCK_SPEED);
     stepper->setAcceleration(LOCK_SPEED*4);
