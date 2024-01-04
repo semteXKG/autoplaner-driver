@@ -9,7 +9,8 @@ Calibrator::~Calibrator() {
 }
 
 void Calibrator::tick() {
-    if(this->sharedData->getState() == MachineState::CALIBRATION_NEEDED && this->sharedData->enterButton->rose() && !this->sharedData->bottomOut->isPressed()) {
+//    if(this->sharedData->getState() == MachineState::CALIBRATION_NEEDED && this->sharedData->enterButton->rose() && !this->sharedData->bottomOut->isPressed()) {
+    if(this->sharedData->getState() == MachineState::CALIBRATION_NEEDED && !this->sharedData->bottomOut->isPressed()) {
         Serial.println("Starting Calibration");
         calibrationRunning = true;
         lockController->unlock(false);

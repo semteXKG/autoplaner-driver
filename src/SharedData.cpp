@@ -45,32 +45,6 @@ int SharedData::getOffset() {
     return backingData.offset;
 }
 
-long SharedData::getLastDistance() {
-    return lastDistance;
-}
-
-void SharedData::setLastDistance(long lastDistance) {
-    this->lastDistance = lastDistance;
-}
-
-void SharedData::setMenuEntries(char* upper, char* mid, char* low) {
-    menuEntries[0] = upper;
-    menuEntries[1] = mid;
-    menuEntries[2] = low;
-}
-
-char** SharedData::getMenuEntries() {
-    return menuEntries;
-}
-
-void SharedData::setLastRotation(int lastRotation) {
-    this->lastRotation = lastRotation;
-}
-
-int SharedData::getLastRotation() {
-    return lastRotation;
-}
-
 bool SharedData::isLocked() {
     return backingData.locked;
 }
@@ -79,25 +53,10 @@ void SharedData::setLocked(bool locked) {
     Serial.print("locked: ");
     Serial.println(locked);
     backingData.locked = locked;
-    scheduleDisplayUpdate();
 }
 
 void SharedData::markCalibrationDone() {
     backingData.calibrationDone = true;
-}
-
-void SharedData::scheduleDisplayUpdate() {
-    if(this->nextDisplayUpdate == -1) {
-        this->nextDisplayUpdate = millis() + DISPLAY_UPDATE_DELAY;
-    }
-}
-
-bool SharedData::shouldUpdateDisplay() {
-    if (this->nextDisplayUpdate != -1 && millis() > this->nextDisplayUpdate) {
-        this->nextDisplayUpdate = -1;
-        return true;
-    }
-    return false;
 }
 
 MachineState SharedData::getState() {
@@ -115,16 +74,6 @@ void SharedData::switchState(MachineState state) {
     Serial.println(machineStateDesc[state]);
     
     backingData.state = state;
-    scheduleDisplayUpdate();
-}
-
-bool SharedData::evaluateFastmodeEnablement(long msSinceLast) {
-    if (msSinceLast < INPUT_QUALIFIES_AS_FASTMODE) {
-        rapidInputReceived++;
-    } else {
-        rapidInputReceived = 0;
-    }
-    return rapidInputReceived > 2;
 }
 
 BackingData SharedData::getBackingData() {

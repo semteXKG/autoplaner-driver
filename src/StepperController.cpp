@@ -46,7 +46,6 @@ void StepperController::calibrationDone() {
     Serial.print("Offset in NVR: ");
     Serial.println(sharedData->getOffset());
     sharedData->setPosition(CAL_POSITION_DENOM + sharedData->getOffset());
-    sharedData->scheduleDisplayUpdate();
 }
 
 void StepperController::handlePosition() {

@@ -1,6 +1,6 @@
 #include <Communicator.h>
 
-uint8_t broadcastAddress[] = {0x0C, 0xB8, 0x15, 0xF6, 0x5C, 0xD8};
+uint8_t broadcastAddress[] = {0x0C, 0xB8, 0x15, 0xF8, 0xF0, 0xEC};
 esp_now_peer_info_t peerInfo;
 
 Communicator *globalCommunicator;

@@ -19,18 +19,10 @@ struct BackingData
 class SharedData {
     private:
         BackingData backingData;
-        char* menuEntries[3];
-        int rapidInputReceived = 0;
-        long nextDisplayUpdate = -1;
-        int lastRotation = 0;
-        long lastDistance = 0;
     public:
         SharedData();
         ~SharedData();
-        Bounce2::Button* enterButton;
-        Bounce2::Button* speedButton;
         Bounce2::Button* bottomOut;
-        Bounce2::Button* moveToConversion;
         void setTargetPosition(long targetPosition);
         long getTargetPosition();
         void setCurrentPosition(long currentPosition);
@@ -38,19 +30,10 @@ class SharedData {
         void setPosition(long position);
         void setOffset(int offset);
         int getOffset();
-        long getLastDistance();
-        void setLastDistance(long lastDistance);
-        void setMenuEntries(char* upper, char* mid, char* low);
-        char** getMenuEntries();
-        void setLastRotation(int rotation);
-        int getLastRotation();
         bool isLocked();
         void setLocked(bool locked);
         void markCalibrationDone();
-        void scheduleDisplayUpdate();
-        bool shouldUpdateDisplay();
         void switchState(MachineState state);
-        bool evaluateFastmodeEnablement(long msSinceLast);
         MachineState getState();
         BackingData getBackingData();
         void setBackingData(BackingData backingData);
