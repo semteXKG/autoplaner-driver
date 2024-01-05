@@ -5,6 +5,7 @@
 #include <WiFi.h>
 #include <SharedData.h>
 #include <mutex>
+#include <ArduinoNvs.h>
 
 class Communicator {
 private:
@@ -14,6 +15,8 @@ private:
     std::mutex lockMutex;
     boolean isChanged(BackingData* currentData, BackingData* previousData);
     boolean isFreshlyStarted();
+    void checkForNvRamUpdates(BackingData* newData, BackingData* existingData);
+    void printDiffChanges(BackingData* newData, BackingData* existingData);
 public:
     Communicator(SharedData* sharedData);
     ~Communicator();

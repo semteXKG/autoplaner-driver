@@ -11,6 +11,7 @@ struct BackingData
     int offset;
     bool locked = false;
     bool calibrationDone = false;
+    bool calibrationStart = false;
     MachineState state;
 };
 
@@ -30,6 +31,7 @@ class SharedData {
         void setOffset(int offset);
         int getOffset();
         bool isLocked();
+        bool shouldCalibrationStart();
         void setLocked(bool locked);
         void markCalibrationDone();
         void switchState(MachineState state);

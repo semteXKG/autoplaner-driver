@@ -3,6 +3,10 @@
 
 SharedData::SharedData() {
     backingData = (BackingData*) malloc(sizeof(BackingData));
+    backingData->calibrationDone = false;
+    backingData->calibrationStart = false;
+    backingData->locked = 0;
+    backingData->offset = 0;
     backingData->currentPosition = MIN_POSITION;
     backingData->targetPosition = backingData->currentPosition;
     backingData->state = MachineState::CALIBRATION_NEEDED;
@@ -48,6 +52,10 @@ int SharedData::getOffset() {
 
 bool SharedData::isLocked() {
     return backingData->locked;
+}
+
+bool SharedData::shouldCalibrationStart() {
+    return backingData->calibrationStart;
 }
 
 void SharedData::setLocked(bool locked) {

@@ -3,6 +3,9 @@
 uint8_t broadcastAddress[] = {0x0C, 0xB8, 0x15, 0xF8, 0xF0, 0xEC};
 esp_now_peer_info_t peerInfo;
 
+static const char* KEY_LOCKSTATE = "lockState";
+static const char* KEY_OFFSET = "offset";
+
 Communicator *globalCommunicator;
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
@@ -60,13 +63,29 @@ Communicator::~Communicator()
 
 void Communicator::updateBackingData(BackingData* newBackingData) {
   std::lock_guard<std::mutex> lck(lockMutex);
+  checkForNvRamUpdates(newBackingData, sharedData->getBackingData());
+  printDiffChanges(newBackingData, sharedData->getBackingData());
   memcpy(previousBackingData, newBackingData, sizeof(BackingData));
   sharedData->setBackingData(newBackingData);
-  Serial.print("new TargetPosition: ");
-  Serial.print(sharedData->getTargetPosition());
-  Serial.print("[");
-  Serial.print(previousBackingData->targetPosition);
-  Serial.println("]");
+}
+
+void Communicator::checkForNvRamUpdates(BackingData* newData, BackingData* existingData) {
+  if(newData->locked != existingData->locked) {
+    Serial.println("Updating locked in NVRAM");
+    NVS.setInt(KEY_LOCKSTATE, newData->locked ? 1 : 0);
+  }
+
+if(newData->offset != existingData->offset) {
+    Serial.println("Updating offset in NVRAM");
+    NVS.setInt(KEY_OFFSET, newData->offset);
+  }
+}
+
+void Communicator::printDiffChanges(BackingData* newData, BackingData* existingData) {
+  if(memcmp(newData, existingData, sizeof(BackingData)) != 0) {
+    Serial.printf("State:\t%s,\t\t\ttarget:\t%d,\tcurrent:\t%d,\toffset:\t%d,\tlocked:\t%d,\tcalibrationDone:\t%d,\tcalibrationStart:\t%d\n", 
+      machineStateDesc[newData->state], newData->targetPosition, newData->currentPosition, newData->offset, newData->locked, newData->calibrationDone, newData->calibrationStart);
+  }
 }
 
 void Communicator::tick()
@@ -76,6 +95,7 @@ void Communicator::tick()
   BackingData* currentBackingData = sharedData->getBackingData();
   if (isFreshlyStarted() || isChanged(currentBackingData, previousBackingData))
   {
+    printDiffChanges(currentBackingData, previousBackingData);
     esp_now_send(broadcastAddress, (uint8_t *)currentBackingData, sizeof(BackingData));
     memcpy(previousBackingData, currentBackingData, sizeof(BackingData));
     lastSent = millis();
@@ -93,37 +113,39 @@ boolean Communicator::isChanged(BackingData* currentData, BackingData* previousD
 {
   if (currentData->calibrationDone != previousData->calibrationDone)
   {
-    Serial.println("calibrationDone");
+    Serial.println("Locally modified: calibrationDone");
+    return true;
+  }
+  if (currentData->calibrationStart != previousData->calibrationStart)
+  {
+    Serial.println("Locally modified: calibrationStart");
     return true;
   }
   if (currentData->currentPosition != previousData->currentPosition)
   {
-    Serial.println("currentPosition");
+    Serial.println("Locally modified: currentPosition");
     return true;
   }
 
   if (currentData->locked != previousData->locked)
   {
-    Serial.println("locked");
+    Serial.println("Locally modified: locked");
     return true;
   }
 
   if (currentData->offset != previousData->offset)
   {
-    Serial.println("offset");
+    Serial.println("Locally modified: offset");
     return true;
   }
   if (currentData->state != previousData->state)
   {
-    Serial.println("state");
+    Serial.println("Locally modified: state");
     return true;
   }
   if (currentData->targetPosition != previousData->targetPosition)
   {
-    Serial.print("targetPosition: ");
-    Serial.print(previousData->targetPosition);
-    Serial.print("->");
-    Serial.println(currentData->targetPosition);
+    Serial.println("Locally modified: targetPosition");
     return true;
   }
   return false;
