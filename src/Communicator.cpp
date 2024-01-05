@@ -71,6 +71,8 @@ void Communicator::updateBackingData(BackingData* newBackingData) {
 
 void Communicator::tick()
 {
+  std::lock_guard<std::mutex> lck(lockMutex);
+
   BackingData* currentBackingData = sharedData->getBackingData();
   if (isFreshlyStarted() || isChanged(currentBackingData, previousBackingData))
   {
@@ -89,8 +91,6 @@ boolean Communicator::isFreshlyStarted()
 
 boolean Communicator::isChanged(BackingData* currentData, BackingData* previousData)
 {
-  std::lock_guard<std::mutex> lck(lockMutex);
-
   if (currentData->calibrationDone != previousData->calibrationDone)
   {
     Serial.println("calibrationDone");

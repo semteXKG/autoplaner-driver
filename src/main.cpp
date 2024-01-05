@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <SharedData.h>
-#include <EnvironmentSensors.h>
 #include <HardwareButtonManager.h>
 #include <Calibrator.h>
 #include <StepperController.h>
@@ -21,7 +20,6 @@ static const gpio_num_t LOCK_STEPPER_DIR = GPIO_NUM_2;
 
 
 SharedData* sharedData;
-EnvironmentSensors* environmentSensors;
 HardwareButtonManager* buttonManager;
 Calibrator* calibrator;
 StepperController* stepperController;
@@ -40,19 +38,16 @@ void setup() {
 	engine->init();
 	sharedData = new SharedData();
 	buttonManager = new HardwareButtonManager(BOTTOM_OUT_BUTTON, sharedData);
-	environmentSensors = new EnvironmentSensors(sharedData);
 	stepperController = new StepperController(sharedData, engine, HEIGHT_STEPPER_PULSE, HEIGHT_STEPPER_DIR);
 	lockController = new LockController(sharedData, engine, LOCK_STEPPER_PULSE, LOCK_STEPPER_DIR);
 	calibrator = new Calibrator(sharedData, lockController);
 	communicator = new Communicator(sharedData);
-//	sharedData->switchState(MachineState::CALIBRATION_NEEDED);
-	sharedData->switchState(MachineState::IDLE);
+	sharedData->switchState(MachineState::CALIBRATION_NEEDED);
 }
 
 
 void loop() {
 	buttonManager->tick();
-	environmentSensors->tick();
 	calibrator->tick();
 	stepperController->tick();
 	lockController->tick();

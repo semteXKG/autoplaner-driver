@@ -10,8 +10,7 @@ struct BackingData
     long currentPosition;
     int offset;
     bool locked = false;
-    //bool calibrationDone = false;
-    bool calibrationDone = true;
+    bool calibrationDone = false;
     MachineState state;
 };
 
