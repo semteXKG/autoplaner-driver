@@ -9,16 +9,16 @@
 class Communicator {
 private:
     SharedData* sharedData;
-    BackingData previousBackingData;
+    BackingData* previousBackingData;
     long lastSent = 0;
     std::mutex lockMutex;
-    boolean isChanged(BackingData currentData, BackingData previousData);
+    boolean isChanged(BackingData* currentData, BackingData* previousData);
     boolean isFreshlyStarted();
 public:
     Communicator(SharedData* sharedData);
     ~Communicator();
     void tick();
-    void updateBackingData(BackingData backingData);
+    void updateBackingData(BackingData* backingData);
 
 };
 

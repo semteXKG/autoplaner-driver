@@ -18,7 +18,7 @@ struct BackingData
 
 class SharedData {
     private:
-        BackingData backingData;
+        BackingData* backingData;
     public:
         SharedData();
         ~SharedData();
@@ -35,8 +35,8 @@ class SharedData {
         void markCalibrationDone();
         void switchState(MachineState state);
         MachineState getState();
-        BackingData getBackingData();
-        void setBackingData(BackingData backingData);
+        BackingData* getBackingData();
+        void setBackingData(BackingData* backingData);
 };
 
 #endif
