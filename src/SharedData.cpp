@@ -59,8 +59,6 @@ bool SharedData::shouldCalibrationStart() {
 }
 
 void SharedData::setLocked(bool locked) {
-    Serial.print("locked: ");
-    Serial.println(locked);
     backingData->locked = locked;
 }
 
@@ -77,10 +75,6 @@ void SharedData::switchState(MachineState state) {
         Serial.print("Cannot go idle without calibration ");
         state = MachineState::CALIBRATION_NEEDED;
     }
-    Serial.print("Switching state to ");
-    Serial.print(state);
-    Serial.print(" - ");
-    Serial.println(machineStateDesc[state]);
     
     backingData->state = state;
 }

@@ -16,7 +16,7 @@ private:
     boolean isChanged(BackingData* currentData, BackingData* previousData);
     boolean isFreshlyStarted();
     void checkForNvRamUpdates(BackingData* newData, BackingData* existingData);
-    void printDiffChanges(BackingData* newData, BackingData* existingData);
+    void printDiffChanges(boolean fromRemote, BackingData* newData, BackingData* existingData);
 public:
     Communicator(SharedData* sharedData);
     ~Communicator();

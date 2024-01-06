@@ -64,7 +64,7 @@ Communicator::~Communicator()
 void Communicator::updateBackingData(BackingData* newBackingData) {
   std::lock_guard<std::mutex> lck(lockMutex);
   checkForNvRamUpdates(newBackingData, sharedData->getBackingData());
-  printDiffChanges(newBackingData, sharedData->getBackingData());
+  printDiffChanges(true, newBackingData, sharedData->getBackingData());
   memcpy(previousBackingData, newBackingData, sizeof(BackingData));
   sharedData->setBackingData(newBackingData);
 }
@@ -81,10 +81,10 @@ if(newData->offset != existingData->offset) {
   }
 }
 
-void Communicator::printDiffChanges(BackingData* newData, BackingData* existingData) {
+void Communicator::printDiffChanges(boolean fromRemote, BackingData* newData, BackingData* existingData) {
   if(memcmp(newData, existingData, sizeof(BackingData)) != 0) {
-    Serial.printf("State:\t%s,\ttarget:\t%d,\tcurrent:\t%d,\toffset:\t%d,\tlocked:\t%d,\tcalibrationDone:\t%d,\tcalibrationStart:\t%d\n", 
-      machineStateDesc[newData->state], newData->targetPosition, newData->currentPosition, newData->offset, newData->locked, newData->calibrationDone, newData->calibrationStart);
+    Serial.printf("Remote:\t%d,\tState:\t%s,\ttarget:\t%d,\tcurrent:\t%d,\toffset:\t%d,\tlocked:\t%d,\tcalibrationDone:\t%d,\tcalibrationStart:\t%d\n", 
+      fromRemote, machineStateDesc[newData->state], newData->targetPosition, newData->currentPosition, newData->offset, newData->locked, newData->calibrationDone, newData->calibrationStart);
   }
 }
 
@@ -95,7 +95,7 @@ void Communicator::tick()
   BackingData* currentBackingData = sharedData->getBackingData();
   if (isFreshlyStarted() || isChanged(currentBackingData, previousBackingData))
   {
-    printDiffChanges(currentBackingData, previousBackingData);
+    printDiffChanges(false, currentBackingData, previousBackingData);
     esp_now_send(broadcastAddress, (uint8_t *)currentBackingData, sizeof(BackingData));
     memcpy(previousBackingData, currentBackingData, sizeof(BackingData));
     lastSent = millis();
