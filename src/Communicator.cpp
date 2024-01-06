@@ -83,7 +83,7 @@ if(newData->offset != existingData->offset) {
 
 void Communicator::printDiffChanges(BackingData* newData, BackingData* existingData) {
   if(memcmp(newData, existingData, sizeof(BackingData)) != 0) {
-    Serial.printf("State:\t%s,\t\t\ttarget:\t%d,\tcurrent:\t%d,\toffset:\t%d,\tlocked:\t%d,\tcalibrationDone:\t%d,\tcalibrationStart:\t%d\n", 
+    Serial.printf("State:\t%s,\ttarget:\t%d,\tcurrent:\t%d,\toffset:\t%d,\tlocked:\t%d,\tcalibrationDone:\t%d,\tcalibrationStart:\t%d\n", 
       machineStateDesc[newData->state], newData->targetPosition, newData->currentPosition, newData->offset, newData->locked, newData->calibrationDone, newData->calibrationStart);
   }
 }
