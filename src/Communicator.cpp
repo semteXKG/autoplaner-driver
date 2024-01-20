@@ -1,6 +1,6 @@
 #include <Communicator.h>
 
-uint8_t broadcastAddress[] = {0x0C, 0xB8, 0x15, 0xF8, 0xF0, 0xEC};
+uint8_t broadcastAddress[] = {0x08, 0xB6, 0x1F, 0x28, 0x6D, 0xDC};
 esp_now_peer_info_t peerInfo;
 
 static const char* KEY_LOCKSTATE = "lockState";
